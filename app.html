@@ -1,0 +1,407 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Math is Fun - Corregido</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+  <style>
+    body { background-color: #fff0f5; font-family: "Comic Sans MS", cursive; }
+    header { background-color: #ffb3ba; text-align: center; padding: 2rem 0; color:#4d004d;}
+    .card { border-radius: 15px; padding: 20px; margin-bottom: 20px; text-align:center; transition: transform 0.2s;}
+    .card:hover { transform: scale(1.02);}
+    .btn-custom { background-color: #ffdfba; color:#4d004d; font-weight:bold; margin-top:5px; }
+    .result { font-weight:bold; color:#4d004d; margin-top:10px; font-size:1.05rem; opacity:0; transition: opacity 0.35s;}
+    .result.show { opacity:1; }
+    input { text-align:center; }
+    p.info { font-size:0.95rem; color:#4d004d; margin-bottom:10px; }
+    .tabla-card { width: 90px; margin: 4px; padding: 6px; border-radius:10px; background-color:#fff7cc; text-align:center; }
+    .small-note { font-size:0.85rem; color:#4d004d; margin-top:6px; }
+  </style>
+</head>
+<body>
+
+<header>
+  <h1>¡Fun Math!</h1>
+  <p>Aprende mientras juegas con matemáticas divertidas</p>
+</header>
+
+<main class="container my-5">
+
+  <div class="row g-4">
+    <div class="col-md-6">
+      <div class="card" style="background-color:#fff7cc;">
+        <p class="info">Operaciones básicas: Suma, resta, multiplicación y división.</p>
+        <input type="number" id="num1" placeholder="Número 1" class="form-control my-1">
+        <input type="number" id="num2" placeholder="Número 2" class="form-control my-1">
+        <div class="mt-2">
+          <button class="btn btn-custom my-1" onclick="sumar()">➕</button>
+          <button class="btn btn-custom my-1" onclick="restar()">➖</button>
+          <button class="btn btn-custom my-1" onclick="multiplicar()">✖</button>
+          <button class="btn btn-custom my-1" onclick="dividir()">➗</button>
+        </div>
+        <div class="result" id="resultadoOperacion"></div>
+      </div>
+    </div>
+
+    <div class="col-md-6">
+      <div class="card" style="background-color:#c3f0ca;">
+        <p class="info">Adivina el número secreto entre 1 y 20.</p>
+        <input type="number" id="guessNumber" placeholder="Tu número" class="form-control my-2" min="1" max="20">
+        <button class="btn btn-custom mt-1" onclick="adivina()">Adivina</button>
+        <button class="btn btn-secondary mt-2" onclick="reiniciarJuego()">Reiniciar</button>
+        <div class="result" id="resultadoAdivina"></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="row g-4 mt-2">
+    <div class="col-md-6">
+      <div class="card" style="background-color:#ffd1dc;">
+        <p class="info">Memoria: Memoriza la operación y escribe el resultado.</p>
+        <p id="memoriaOperacion" style="font-weight:bold;">Nueva operación</p>
+        <input type="number" id="memoriaRespuesta" placeholder="Resultado" class="form-control my-2">
+        <button class="btn btn-custom mt-1" onclick="verificarMemoria()">Verificar</button>
+        <button class="btn btn-secondary mt-2" onclick="generarMemoria()">Nueva</button>
+        <div class="result" id="resultadoMemoria"></div>
+      </div>
+    </div>
+
+    <div class="col-md-6">
+      <div class="card" style="background-color:#d9c9ff;">
+        <p class="info">Secuencias: Encuentra el número que falta.</p>
+        <p id="secuenciaPregunta" style="font-weight:bold;">Nueva secuencia</p>
+        <input type="number" id="secuenciaRespuesta" placeholder="Número" class="form-control my-2">
+        <button class="btn btn-custom mt-1" onclick="verificarSecuencia()">Verificar</button>
+        <button class="btn btn-secondary mt-1" onclick="generarSecuencia()">Nueva</button>
+        <div class="result" id="resultadoSecuencia"></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="row g-4 mt-4">
+    <div class="col-md-12">
+      <div class="card" style="background-color:#cce0ff;">
+        <p class="info">Reto diario: Un desafío diferente cada día.</p>
+        <p id="retoPregunta" style="font-weight:bold;">Haz clic en "Generar Reto"</p>
+        <input type="text" id="respuestaReto" placeholder="Respuesta" class="form-control my-2">
+        <button class="btn btn-custom mt-1" onclick="verificarReto()">Verificar</button>
+        <button class="btn btn-custom mt-1" onclick="generarReto()">Generar Reto</button>
+        <div class="result" id="resultadoReto"></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="row g-4 mt-4">
+    <h2 class="text-center mb-4" style="color:#4d004d;">Avanzado</h2>
+
+    <div class="col-md-6">
+      <div class="card" style="background-color:#ffd6a5;">
+        <p class="info">Álgebra</p>
+        <p id="algebraPregunta" style="font-weight:bold; font-size:1.1rem;"></p>
+        <input type="number" id="algebraInput" placeholder="x" class="form-control my-2">
+        <button class="btn btn-custom mt-1" onclick="verificarAlgebra()">Verificar</button>
+        <button class="btn btn-secondary mt-1" onclick="generarAlgebra()">Nueva ecuación</button>
+        <div class="result" id="resultadoAlgebra"></div>
+      </div>
+    </div>
+
+    <div class="col-md-6">
+      <div class="card" style="background-color:#c3f0ca;">
+        <p class="info">Geometría</p>
+        <p id="geoPregunta" style="font-weight:bold; font-size:1.1rem;"></p>
+        <input type="number" id="geoInput" placeholder="Área" class="form-control my-2">
+        <button class="btn btn-custom mt-1" onclick="verificarGeometria()">Verificar</button>
+        <button class="btn btn-secondary mt-1" onclick="generarGeometria()">Nueva figura</button>
+        <div class="result" id="resultadoGeometria"></div>
+      </div>
+    </div>
+
+    <div class="col-md-6">
+      <div class="card" style="background-color:#ffb3ba;">
+        <p class="info">Ley de signos</p>
+        <p id="signosPregunta" style="font-weight:bold; font-size:1.1rem;"></p>
+        <input type="number" id="signosInput" placeholder="Resultado" class="form-control my-2">
+        <button class="btn btn-custom mt-1" onclick="verificarSignos()">Verificar</button>
+        <button class="btn btn-secondary mt-1" onclick="generarSignos()">Nueva ecuación</button>
+        <div class="result" id="resultadoSignos"></div>
+      </div>
+    </div>
+
+    <div class="col-md-6">
+      <div class="card" style="background-color:#fef3bd;">
+        <p class="info">Derivadas</p>
+        <p id="derivadaPregunta" style="font-weight:bold; font-size:1.1rem;"></p>
+        <input type="text" id="derivadaInput" placeholder="f'(x)" class="form-control my-2">
+        <button class="btn btn-custom mt-1" onclick="verificarDerivada()">Verificar</button>
+        <button class="btn btn-secondary mt-1" onclick="generarDerivada()">Nueva función</button>
+        <div class="result" id="resultadoDerivada"></div>
+      </div>
+    </div>
+
+    <div class="col-md-12">
+      <div class="card" style="background-color:#cdb4db;">
+        <p class="info">Límites</p>
+        <p id="limitePregunta" style="font-weight:bold; font-size:1.1rem;"></p>
+        <input type="number" id="limiteInput" placeholder="Resultado" class="form-control my-2">
+        <button class="btn btn-custom mt-1" onclick="verificarLimite()">Verificar</button>
+        <button class="btn btn-secondary mt-1" onclick="generarLimite()">Nuevo límite</button>
+        <div class="result" id="resultadoLimite"></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="row g-4 mt-4">
+    <h2 class="text-center mb-4" style="color:#4d004d;">Info Avanzado</h2>
+    <div class="col-md-2">
+      <button class="btn btn-custom w-100" onclick="mostrarInfo('Álgebra','Rama de las matemáticas que estudia estructuras y relaciones abstractas entre números e incógnitas.')">Álgebra</button>
+    </div>
+    <div class="col-md-2">
+      <button class="btn btn-custom w-100" onclick="mostrarInfo('Geometría','Estudio de las formas, tamaños y posiciones de figuras en el espacio.')">Geometría</button>
+    </div>
+    <div class="col-md-2">
+      <button class="btn btn-custom w-100" onclick="mostrarInfo('Ley de signos','Reglas que determinan el signo de un producto o cociente según los signos de los factores.')">Ley de signos</button>
+    </div>
+    <div class="col-md-2">
+      <button class="btn btn-custom w-100" onclick="mostrarInfo('Derivadas','Cómo cambia una función respecto a su variable, derivadas básicas.')">Derivadas</button>
+    </div>
+    <div class="col-md-2">
+      <button class="btn btn-custom w-100" onclick="mostrarInfo('Límites','Comportamiento de una función cuando la variable se aproxima a un valor.')">Límites</button>
+    </div>
+  </div>
+
+  <div class="row g-4 mt-4">
+    <div class="col-md-12">
+      <div class="card" style="background-color:#ffe0ac;">
+        <p class="info">Tablas de multiplicar:</p>
+        <ul class="nav nav-pills flex-wrap" id="tablaNav"></ul>
+        <div id="tablaMultiplicar" class="d-flex flex-wrap justify-content-center mt-3"></div>
+      </div>
+    </div>
+  </div>
+
+</main>
+
+<div class="modal fade" id="infoModal" tabindex="-1" aria-labelledby="infoModalLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="infoModalLabel">Información</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+      </div>
+      <div class="modal-body" id="infoModalBody"></div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<audio id="sonidoCorrecto"><source src="https://actions.google.com/sounds/v1/cartoon/clang_and_wobble.ogg" type="audio/ogg"></audio>
+<audio id="sonidoError"><source src="https://actions.google.com/sounds/v1/cartoon/cartoon_boing.ogg" type="audio/ogg"></audio>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+<script>
+const sonidoCorrecto = document.getElementById('sonidoCorrecto');
+const sonidoError = document.getElementById('sonidoError');
+
+function mostrarResultado(id, correcto){
+  const el = document.getElementById(id);
+  if(!el) return;
+  el.classList.remove('show'); void el.offsetWidth;
+  if(correcto){ el.innerText = "¡Correcto! 🎉"; sonidoCorrecto && sonidoCorrecto.play().catch(()=>{}); }
+  else { el.innerText = "Incorrecto ❌"; sonidoError && sonidoError.play().catch(()=>{}); }
+  el.classList.add('show');
+}
+
+function operar(op){
+  const n1 = parseFloat(document.getElementById("num1").value);
+  const n2 = parseFloat(document.getElementById("num2").value);
+  const out = document.getElementById("resultadoOperacion");
+  if(isNaN(n1) || isNaN(n2)){ out.innerText = "Ingresa números"; out.classList.add('show'); return; }
+  let res;
+  if(op==='+') res = n1 + n2;
+  if(op==='-') res = n1 - n2;
+  if(op==='*') res = n1 * n2;
+  if(op==='/') res = (n2 === 0) ? "No se puede dividir entre 0" : (n1 / n2).toFixed(2);
+  out.innerText = "Resultado: " + res; out.classList.add('show');
+}
+function sumar(){ operar('+'); }
+function restar(){ operar('-'); }
+function multiplicar(){ operar('*'); }
+function dividir(){ operar('/'); }
+
+let numeroSecreto = Math.floor(Math.random()*20) + 1;
+function adivina(){
+  const intento = parseInt(document.getElementById("guessNumber").value, 10);
+  const out = document.getElementById("resultadoAdivina");
+  if(isNaN(intento)){ out.innerText = "Ingresa un número"; out.classList.add('show'); return; }
+  if(intento === numeroSecreto){ out.innerText = "¡Correcto! 🎉"; out.classList.add('show'); sonidoCorrecto && sonidoCorrecto.play().catch(()=>{}); }
+  else if(intento < numeroSecreto){ out.innerText = "Demasiado bajo 📉"; out.classList.add('show'); sonidoError && sonidoError.play().catch(()=>{}); }
+  else { out.innerText = "Demasiado alto 📈"; out.classList.add('show'); sonidoError && sonidoError.play().catch(()=>{}); }
+}
+function reiniciarJuego(){
+  numeroSecreto = Math.floor(Math.random()*20) + 1;
+  document.getElementById("guessNumber").value='';
+  const out=document.getElementById("resultadoAdivina");
+  out.innerText='';
+  out.classList.remove('show');
+}
+
+let memoriaResultado = null;
+function generarMemoria(){
+  const a = Math.floor(Math.random()*10) + 1;
+  const b = Math.floor(Math.random()*10) + 1;
+  memoriaResultado = a + b;
+  document.getElementById("memoriaOperacion").innerText = `${a} + ${b}`;
+  const out = document.getElementById("resultadoMemoria"); out.innerText=''; out.classList.remove('show');
+  document.getElementById("memoriaRespuesta").value = '';
+}
+function verificarMemoria(){
+  const r = parseInt(document.getElementById("memoriaRespuesta").value, 10);
+  if(isNaN(r)){ document.getElementById("resultadoMemoria").innerText="Ingresa un número"; document.getElementById("resultadoMemoria").classList.add('show'); return; }
+  mostrarResultado('resultadoMemoria', r === memoriaResultado);
+}
+
+let secuenciaCorrecta = null;
+function generarSecuencia(){
+  const start = Math.floor(Math.random()*10) + 1;
+  const step = Math.floor(Math.random()*5) + 1;
+  secuenciaCorrecta = start + 3*step;
+  document.getElementById("secuenciaPregunta").innerText = `${start}, ${start+step}, ${start+2*step}, ?`;
+  const out = document.getElementById("resultadoSecuencia"); out.innerText=''; out.classList.remove('show');
+  document.getElementById("secuenciaRespuesta").value = '';
+}
+function verificarSecuencia(){
+  const r = parseInt(document.getElementById("secuenciaRespuesta").value, 10);
+  if(isNaN(r)){ document.getElementById("resultadoSecuencia").innerText="Ingresa un número"; document.getElementById("resultadoSecuencia").classList.add('show'); return; }
+  mostrarResultado('resultadoSecuencia', r === secuenciaCorrecta);
+}
+
+const retos = [
+  {pregunta:"12 + 8 = ?", respuesta:"20"},
+  {pregunta:"5 × 6 = ?", respuesta:"30"},
+  {pregunta:"15 - 7 = ?", respuesta:"8"},
+  {pregunta:"36 ÷ 6 = ?", respuesta:"6"},
+  {pregunta:"Número primo entre 10 y 20", respuesta:"11"},
+];
+let retoActual = null;
+function generarReto(){
+  retoActual = retos[Math.floor(Math.random()*retos.length)];
+  document.getElementById("retoPregunta").innerText = retoActual.pregunta;
+  document.getElementById("resultadoReto").innerText='';
+  document.getElementById("respuestaReto").value='';
+}
+function verificarReto(){
+  const r = document.getElementById("respuestaReto").value.trim();
+  if(!r){ document.getElementById("resultadoReto").innerText="Ingresa una respuesta"; document.getElementById("resultadoReto").classList.add('show'); return; }
+  mostrarResultado('resultadoReto', r === retoActual.respuesta);
+}
+
+let algebraCorrecta = null;
+function generarAlgebra(){
+  const x = Math.floor(Math.random()*10)+1;
+  const a = Math.floor(Math.random()*10)+1;
+  const b = Math.floor(Math.random()*10)+1;
+  algebraCorrecta = x;
+  document.getElementById("algebraPregunta").innerText = `Resuelve: ${a}x + ${b} = ${a*x + b}`;
+  document.getElementById("resultadoAlgebra").innerText='';
+  document.getElementById("algebraInput").value='';
+}
+function verificarAlgebra(){
+  const r = parseInt(document.getElementById("algebraInput").value, 10);
+  mostrarResultado('resultadoAlgebra', r === algebraCorrecta);
+}
+
+let geoCorrecta = null;
+function generarGeometria(){
+  const lado = Math.floor(Math.random()*10)+1;
+  geoCorrecta = lado*lado;
+  document.getElementById("geoPregunta").innerText = `Área de un cuadrado de lado ${lado}`;
+  document.getElementById("resultadoGeometria").innerText='';
+  document.getElementById("geoInput").value='';
+}
+function verificarGeometria(){
+  const r = parseInt(document.getElementById("geoInput").value, 10);
+  mostrarResultado('resultadoGeometria', r === geoCorrecta);
+}
+
+let signosCorrecta = null;
+function generarSignos(){
+  const a = (Math.random() < 0.5 ? -1 : 1) * (Math.floor(Math.random()*9)+1);
+  const b = (Math.random() < 0.5 ? -1 : 1) * (Math.floor(Math.random()*9)+1);
+  signosCorrecta = a*b;
+  document.getElementById("signosPregunta").innerText = `${a} × ${b}`;
+  document.getElementById("resultadoSignos").innerText='';
+  document.getElementById("signosInput").value='';
+}
+function verificarSignos(){
+  const r = parseInt(document.getElementById("signosInput").value, 10);
+  mostrarResultado('resultadoSignos', r === signosCorrecta);
+}
+
+let derivadaCorrecta = null;
+function generarDerivada(){
+  const n = Math.floor(Math.random()*5)+2;
+  derivadaCorrecta = `${n}x^${n-1}`;
+  document.getElementById("derivadaPregunta").innerText = `f(x) = x^${n}`;
+  document.getElementById("resultadoDerivada").innerText='';
+  document.getElementById("derivadaInput").value='';
+}
+function verificarDerivada(){
+  const r = document.getElementById("derivadaInput").value.trim().toLowerCase();
+  mostrarResultado('resultadoDerivada', r === derivadaCorrecta.toLowerCase());
+}
+
+let limiteCorrecta = null;
+function generarLimite(){
+  const a = Math.floor(Math.random()*5)+1;
+  limiteCorrecta = 2*a;
+  document.getElementById("limitePregunta").innerText = `lim (x→${a}) de 2x = ?`;
+  document.getElementById("resultadoLimite").innerText='';
+  document.getElementById("limiteInput").value='';
+}
+function verificarLimite(){
+  const r = parseFloat(document.getElementById("limiteInput").value);
+  mostrarResultado('resultadoLimite', r === limiteCorrecta);
+}
+
+function mostrarInfo(titulo, texto){
+  document.getElementById("infoModalLabel").innerText = titulo;
+  document.getElementById("infoModalBody").innerText = texto;
+  new bootstrap.Modal(document.getElementById('infoModal')).show();
+}
+
+const tablaNav = document.getElementById("tablaNav");
+for(let i=1;i<=10;i++){
+  const li = document.createElement("li");
+  li.className="nav-item m-1";
+  li.innerHTML=`<button class="btn btn-sm btn-outline-primary" onclick="mostrarTabla(${i})">${i}</button>`;
+  tablaNav.appendChild(li);
+}
+function mostrarTabla(n){
+  const cont=document.getElementById("tablaMultiplicar");
+  cont.innerHTML='';
+  for(let i=1;i<=10;i++){
+    const div=document.createElement("div");
+    div.className="tabla-card";
+    div.innerText=`${n} × ${i} = ${n*i}`;
+    cont.appendChild(div);
+  }
+}
+
+window.onload = function(){
+  generarMemoria();
+  generarSecuencia();
+  generarAlgebra();
+  generarGeometria();
+  generarSignos();
+  generarDerivada();
+  generarLimite();
+  generarReto();
+  mostrarTabla(1);
+};
+</script>
+
+</body>
+</html>
